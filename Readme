@@ -1,0 +1,49 @@
+* Projekt ISA 2009, Varianta - Sledování sítě s využitím NetFlow v5
+* autor: Petr Mrázek (xmraze03) 
+
+** Popis funkce programu
+
+    Program sleduje provoz na síťovém rozhraní, exportuje informace o tocích
+na rozhraní a může také vytvářet záznam o své činnosti (do stdout nebo souboru)
+
+** Použití
+
+nf5exporter -h
+nf5exporter -n <interface> -d <ip-address> -p <port> -i <inactive-timeout-ms>
+            -a <active-timeout-ms> -o <output-file> -O
+
+kde:
+-h   vypíše nápovědu
+<interface> název rozhraní, např. lo0 - default = automaticky najít
+<ip-address> IP adresa kolektoru
+<port> číslo portu, na kterém kolektor naslouchá - default = 2055
+<inactive-timeout-ms> neaktivní timeout v milisekundách - default = 15 vteřin
+<active-timeout-ms> aktivní timeout v milisekundách - default půl hodiny
+<output-file> při zadání tohoto parametru se odchozí záznamy budou navíc
+              logovat do souboru
+-O navíc logování odchozích záznamů do stdout, užitečné pro další zpracování
+
+jediný povinný parametr je IP adresa kolektoru
+
+** Omezení
+
+    Maximální délka toku je omezena na 3GB, tok je při překročení nuceně
+vyexportován.
+
+** Soubory
+
+main.cpp   -- vstupní bod, zachycení paketů, práce s časováním a signály
+nfv5.cpp   -- zpracování paketů, export toků
+nfv5.h     -- interface pro nfv5
+nfv5util.h -- použité struktury a základní operace nad nimi
+Makefile   -- Makefile, funguje pro FreeBSD a Linux
+README     -- tento soubor
+
+** Závislosti
+
+    Ke zkompilování je potřeba knihovna pcap (testováno s verzí 1.0.0).
+    
+** Základní popis funkce
+
+    Pakety se zachytávají pomoví pcap_loop v main(), export je řízen časovačem
+a signálem SIGALRM.
